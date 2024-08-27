@@ -193,11 +193,11 @@ async function operator(proxies = [], targetPlatform, context) {
         if (speedValue >= minRequiredSpeed) {
           validProxies.push({
             ...proxy,
-            name: `${proxy.name} [测速结果:${speed}] `,
+            name: `${proxy.name} [下载速度:${speed}] `,
         }) }else {
             validProxies.push({
                 ...proxy,
-                name: `${proxy.name} [${speed}] 速度过低 `,
+                name: `${proxy.name} [下載速度：${speed}]  `,
             })
         }
         if (cacheEnabled) {
@@ -214,7 +214,7 @@ async function operator(proxies = [], targetPlatform, context) {
       $.error(`[${proxy.name}] ${e.message ?? e}`)
       validProxies.push({
         ...proxy,
-        name: `${proxy.name} [测速失败]`,
+        name: `${proxy.name} [下载速度未知]`,
       });
       if (cacheEnabled) {
         $.info(`[${proxy.name}] 设置失败缓存`)
