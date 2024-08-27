@@ -1,9 +1,12 @@
 
 /**
  *  对原版修改：
- *   1.结束后把速度写在节点名称的结尾而不是开头。
- *   2.参数新增[minRequiredSpeed]，最低速度要求，如果测速结果低于这个值，节点名称的结尾会写上速度过低。方便使用Sub-Store正则过滤去掉速度过低的节点。 默认:20。单位:Mbps。
- *   3.新增url_sg 和url_us，用于测速新加坡和美东的节点
+ *   1.结束后把速度写在节点名称的结尾而不是开头。并且写入格式由原[$speed]，修改为[下载速度:${speed}]。
+ *   3.测速失败的节点，现在可以通过参数[remove_failed]决定是否移除。
+ *   4.现在可以通过参数[minRequiredSpeed]筛选速度过低的节点，默认:20Mbps，如果节点速度低于设定值，写入格式会使用繁体[下載速度：${speed}]。通过substore正则筛选繁体“下載速度”可以移除速度低于20Mbps的节点。
+ *   5.新增url_sg 和url_us，用于测速新加坡和美东的节点
+
+
  * 节点测速娱乐版(适配 Sub-Store Node.js 版)
  *
  * 说明: https://t.me/zhetengsha/1258
@@ -28,7 +31,8 @@
  * - [cache] 使用缓存, 默认不使用缓存
  *
  * 新增参数
- * - [minRequiredSpeed] 最低速度要求，如果测速结果低于这个值，节点名称的结尾会写上速度过低。方便使用Sub-Store正则过滤去掉速度过低的节点。 默认:20。 单位:Mbps。
+ * - [minRequiredSpeed] 最低速度要求， 默认:20。 单位:Mbps。
+ * - [remove_failed] 移除测速失败的节点. 默认不移除.
  */
 
 async function operator(proxies = [], targetPlatform, context) {
@@ -39,6 +43,7 @@ async function operator(proxies = [], targetPlatform, context) {
   const http_meta_protocol = $arguments.http_meta_protocol ?? 'http'
   const http_meta_authorization = $arguments.http_meta_authorization ?? ''
   const http_meta_api = `${http_meta_protocol}://${http_meta_host}:${http_meta_port}`
+  const remove_failed = $arguments.remove_failed
 
   const http_meta_start_delay = parseFloat($arguments.http_meta_start_delay ?? 3000)
   const http_meta_proxy_timeout = parseFloat($arguments.http_meta_proxy_timeout ?? 10000)
@@ -216,10 +221,11 @@ async function operator(proxies = [], targetPlatform, context) {
       }
     } catch (e) {
       $.error(`[${proxy.name}] ${e.message ?? e}`)
+      if (remove_failed){
       validProxies.push({
         ...proxy,
         name: `${proxy.name} [下载速度未知]`,
-      });
+      })}
       if (cacheEnabled) {
         $.info(`[${proxy.name}] 设置失败缓存`)
         cache.set(id, {})
