@@ -1,9 +1,9 @@
 
 /**
  *  对原版修改：
- *   -结束后把速度写在节点名称的结尾而不是开头。
- *   -参数新增[minRequiredSpeed]，最低速度要求，如果测速结果低于这个值，节点名称的结尾会写上速度过低。方便使用Sub-Store正则过滤去掉速度过低的节点。 默认:20。单位:Mbps。
-
+ *   1.结束后把速度写在节点名称的结尾而不是开头。
+ *   2.参数新增[minRequiredSpeed]，最低速度要求，如果测速结果低于这个值，节点名称的结尾会写上速度过低。方便使用Sub-Store正则过滤去掉速度过低的节点。 默认:20。单位:Mbps。
+ *   3.新增url_sg 和url_us，用于测速新加坡和美东的节点
  * 节点测速娱乐版(适配 Sub-Store Node.js 版)
  *
  * 说明: https://t.me/zhetengsha/1258
@@ -45,7 +45,11 @@ async function operator(proxies = [], targetPlatform, context) {
 
   const keepIncompatible = $arguments.keep_incompatible
   const bytes = ($arguments.size || 10) * 1024 * 1024
-  const url = `https://speed.cloudflare.com/__down?bytes=${bytes}`
+// 新增url_sg 和url_us，用于测速新加坡和美东的节点
+  const url_cf = `https://speed.cloudflare.com/__down?bytes=${bytes}`
+  const url_sg = `https://sin-speed.hetzner.com/100MB.bin`
+  const url_us = `https://nbg1-speed.hetzner.com/100MB.bin`
+  const url = $arguments.url_sg ? url_sg : $arguments.url_us ? url_us : url_cf;
 
     //新增minRequiredSpeed参数，默认值为20
  const minRequiredSpeed = $arguments.minRequiredSpeed ?? 20;
