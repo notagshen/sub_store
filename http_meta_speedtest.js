@@ -221,7 +221,7 @@ async function operator(proxies = [], targetPlatform, context) {
       }
     } catch (e) {
       $.error(`[${proxy.name}] ${e.message ?? e}`)
-      if (remove_failed){
+      if (!remove_failed){
       validProxies.push({
         ...proxy,
         name: `${proxy.name} [下载速度未知]`,
